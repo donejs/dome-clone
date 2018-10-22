@@ -1,6 +1,6 @@
 # ir-clone
 
-[![Build Status](https://travis-ci.org//ir-clone.svg?branch=master)](https://travis-ci.org//ir-clone)
+[![Build Status](https://travis-ci.org//ir-clone.svg?branch=master)](https://travis-ci.org//ir-clone) [![Greenkeeper badge](https://badges.greenkeeper.io/donejs/ir-clone.svg)](https://greenkeeper.io/)
 
 
 
