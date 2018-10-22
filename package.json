@@ -1,0 +1,40 @@
+{
+  "name": "ir-clone",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/donejs/ir-clone.git"
+  },
+  "author": {
+    "name": "DoneJS Contributors",
+    "email": "core@donejs.com",
+    "url": "https://donejs.com"
+  },
+  "scripts": {
+    "preversion": "npm test",
+    "version": "git commit -am \"Update version number\"",
+    "postpublish": "git push --tags && git push",
+    "testee": "testee test/test.html --browsers firefox",
+    "test": "npm run jshint && npm run testee",
+    "jshint": "jshint ./*.js --config",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish"
+  },
+  "main": "ir-clone.js",
+  "keywords": [
+    "",
+    "donejs-plugin"
+  ],
+  "devDependencies": {
+    "can-simple-dom": "^1.4.2",
+    "jshint": "^2.9.1",
+    "steal": "^2.0.0",
+    "steal-qunit": "^1.0.1",
+    "steal-tools": "^2.0.0",
+    "testee": "^0.8.1"
+  },
+  "license": "MIT"
+}
