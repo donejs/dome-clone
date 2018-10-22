@@ -44,6 +44,7 @@ function* serialize(rootNode) {
 
 		if(!skip && node.firstChild) {
 			depth++;
+			prev = node;
 			node = node.firstChild;
 		} else if(node.nextSibling) {
 			prev = node;

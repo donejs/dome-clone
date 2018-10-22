@@ -40,3 +40,15 @@ QUnit.test("Doesn't include comment unless there are consecutive text nodes", fu
 	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body>test<h1></h1></body></html>";
 	QUnit.equal(html, expected);
 });
+
+QUnit.test("TextNodes in between elements", function() {
+	var doc = createDocument();
+	doc.body.appendChild(doc.createTextNode("1"));
+	var h1 = doc.createElement("h1");
+	h1.appendChild(doc.createTextNode(2));
+	doc.body.appendChild(h1);
+
+	var html = cloneUtils.serializeToString(doc);
+	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body>1<h1>2</h1></body></html>";
+	QUnit.equal(html, expected);
+});
