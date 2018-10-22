@@ -31,3 +31,12 @@ QUnit.test("Document with comments", function() {
 	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body><!--some comment--></body></html>";
 	QUnit.equal(html, expected);
 });
+
+QUnit.test("Doesn't include comment unless there are consecutive text nodes", function() {
+	var doc = createDocument();
+	doc.body.appendChild(doc.createTextNode("test"));
+	doc.body.appendChild(doc.createElement("h1"));
+	var html = cloneUtils.serializeToString(doc);
+	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body>test<h1></h1></body></html>";
+	QUnit.equal(html, expected);
+});

@@ -18,6 +18,10 @@ function* serialize(rootNode) {
 						yield ` ${node.attributes[i].name}="${node.attributes[i].value}"`;
 					}
 					yield ">";
+
+					if(!node.firstChild && node.nodeType === 1) {
+						yield "</" + node.nodeName.toLowerCase() + ">";
+					}
 					break;
 				// TextNode
 				case 3:
