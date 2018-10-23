@@ -64,3 +64,15 @@ QUnit.test("Escapes attributes", function() {
 	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body><iframe srcdoc=\"<html><head><title>Some title</title></head><body class=&quot;open&quot;><h1>Hello world</h1></body></html>\"></iframe></body></html>";
 	QUnit.equal(html, expected);
 });
+
+QUnit.test("Does not close void elements", function() {
+	var doc = createDocument();
+	doc.head.appendChild(doc.createElement("meta"));
+	doc.head.appendChild(doc.createElement("link"));
+	doc.body.appendChild(doc.createElement("div"));
+	doc.body.appendChild(doc.createElement("input"));
+
+	var html = cloneUtils.serializeToString(doc);
+	var expected = "<!DOCTYPE html><html><head><title>test</title><meta><link></head><body><div></div><input></body></html>";
+	QUnit.equal(html, expected);
+});

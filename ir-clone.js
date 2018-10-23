@@ -1,3 +1,5 @@
+var voidMap = require("./void-map");
+
 var REG_ESCAPE_ALL = /[<>&]/g;
 var REG_ESCAPE_PRESERVE_ENTITIES = /[<>]|&(?:#?[a-zA-Z0-9]+;)?/g;
 
@@ -40,7 +42,7 @@ function* serialize(rootNode) {
 					}
 					yield ">";
 
-					if(!node.firstChild && node.nodeType === 1) {
+					if(!node.firstChild && node.nodeType === 1 && !isVoid(node)) {
 						yield "</" + node.nodeName.toLowerCase() + ">";
 					}
 					break;
@@ -80,7 +82,7 @@ function* serialize(rootNode) {
 			depth--;
 			skip = true;
 
-			if(node.nodeType === 1) {
+			if(node.nodeType === 1 && !isVoid(node)) {
 				yield "</" + node.nodeName.toLowerCase() + ">";
 			}
 		}
@@ -125,6 +127,10 @@ function escapeText(value, escapeAll) {
 
 function isMetadataTag (elem) {
 	return !!elem && metadataContentTags[elem.nodeName.toLowerCase()];
+}
+
+function isVoid(element) {
+	return voidMap[element.nodeName] === true;
 }
 
 exports.serialize = serialize;
