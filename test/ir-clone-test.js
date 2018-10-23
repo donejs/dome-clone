@@ -52,3 +52,15 @@ QUnit.test("TextNodes in between elements", function() {
 	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body>1<h1>2</h1></body></html>";
 	QUnit.equal(html, expected);
 });
+
+QUnit.test("Escapes attributes", function() {
+	var doc = createDocument();
+	var iframe = doc.createElement("iframe");
+	var srcdoc = "<html><head><title>Some title</title></head><body class=\"open\"><h1>Hello world</h1></body></html>";
+	iframe.setAttribute("srcdoc", srcdoc);
+	doc.body.appendChild(iframe);
+
+	var html = cloneUtils.serializeToString(doc);
+	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body><iframe srcdoc=\"<html><head><title>Some title</title></head><body class=&quot;open&quot;><h1>Hello world</h1></body></html>\"></iframe></body></html>";
+	QUnit.equal(html, expected);
+});
