@@ -76,3 +76,16 @@ QUnit.test("Does not close void elements", function() {
 	var expected = "<!DOCTYPE html><html><head><title>test</title><meta><link></head><body><div></div><input></body></html>";
 	QUnit.equal(html, expected);
 });
+
+QUnit.test("Empty TextNodes are given space", function() {
+	var doc = createDocument();
+	var el = doc.createElement("div");
+
+	doc.body.appendChild(doc.createTextNode(""));
+	doc.body.appendChild(doc.createTextNode(""));
+	doc.body.appendChild(doc.createTextNode(""));
+
+	var html = cloneUtils.serializeToString(doc);
+	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body> <!--__DONEJS-SEP__--> <!--__DONEJS-SEP__--> </body></html>";
+	QUnit.equal(html, expected);
+});
