@@ -53,9 +53,9 @@ function* serialize(rootNode) {
 					}
 
 					if (isMetadataTag(node.parentNode)) {
-						yield node.nodeValue;
+						yield giveSpace(node.nodeValue);
 					} else {
-						yield escapeText(node.nodeValue);
+						yield giveSpace(escapeText(node.nodeValue));
 					}
 					break;
 				// Comments
@@ -131,6 +131,13 @@ function isMetadataTag (elem) {
 
 function isVoid(element) {
 	return voidMap[element.nodeName] === true;
+}
+
+function giveSpace(txt) {
+	if(txt.length) {
+		return txt;
+	}
+	return " ";
 }
 
 exports.serialize = serialize;
