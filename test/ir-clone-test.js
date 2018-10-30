@@ -79,7 +79,6 @@ QUnit.test("Does not close void elements", function() {
 
 QUnit.test("Empty TextNodes are given space", function() {
 	var doc = createDocument();
-	var el = doc.createElement("div");
 
 	doc.body.appendChild(doc.createTextNode(""));
 	doc.body.appendChild(doc.createTextNode(""));
@@ -87,5 +86,17 @@ QUnit.test("Empty TextNodes are given space", function() {
 
 	var html = cloneUtils.serializeToString(doc);
 	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body> <!--__DONEJS-SEP__--> <!--__DONEJS-SEP__--> </body></html>";
+	QUnit.equal(html, expected);
+});
+
+
+QUnit.test("Script tags with an empty TextNode are not given space", function() {
+	var doc = createDocument();
+	var script = doc.createElement("script");
+	script.appendChild(doc.createTextNode(""));
+	doc.body.appendChild(script);
+
+	var html = cloneUtils.serializeToString(doc);
+	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body><script></script></body></html>";
 	QUnit.equal(html, expected);
 });
