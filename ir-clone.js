@@ -53,7 +53,7 @@ function* serialize(rootNode) {
 					}
 
 					if (isMetadataTag(node.parentNode)) {
-						yield giveSpace(node.nodeValue);
+						yield node.nodeValue;
 					} else {
 						yield giveSpace(escapeText(node.nodeValue));
 					}
