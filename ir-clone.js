@@ -9,6 +9,10 @@ var metadataContentTags = {
     template: true
 };
 
+function tnValue(node) {
+	return node.data != null ? node.data : node.nodeValue;
+}
+
 function* serialize(rootNode) {
 	var node = rootNode;
 	var prev = node;
@@ -53,9 +57,9 @@ function* serialize(rootNode) {
 					}
 
 					if (isMetadataTag(node.parentNode)) {
-						yield node.nodeValue;
+						yield tnValue(node);
 					} else {
-						yield giveSpace(escapeText(node.nodeValue));
+						yield giveSpace(escapeText(tnValue(node)));
 					}
 					break;
 				// Comments

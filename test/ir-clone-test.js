@@ -100,3 +100,16 @@ QUnit.test("Script tags with an empty TextNode are not given space", function() 
 	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body><script></script></body></html>";
 	QUnit.equal(html, expected);
 });
+
+QUnit.test("Prefer TextNode::data over nodeValue", function() {
+	var doc = createDocument();
+	var tn = doc.createTextNode("value");
+	Object.defineProperty(tn, "nodeValue", {
+		value: undefined
+	});
+	doc.body.appendChild(tn);
+
+	var html = cloneUtils.serializeToString(doc);
+	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body>value</body></html>";
+	QUnit.equal(html, expected);
+});
