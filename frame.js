@@ -1,4 +1,4 @@
-const serializeToString = require("./serialize");
+const {serializeToString} = require("./serialize");
 
 function makePrependTo(prop) {
 	return function(document, element) {
@@ -47,6 +47,21 @@ function removeInlineScripts(root) {
 const prependToHead = makePrependTo("head");
 const prependToBody = makePrependTo("body");
 
+function applyLock(document, prop, node) {
+	// If the documentElement is replaced (done-autorender),
+	// move the script over to the new <head> element.
+	let rc = document.replaceChild;
+	document.replaceChild = function(){
+		let res = rc.apply(this, arguments);
+		if(prop === "head") {
+			prependToHead(document, node);
+		} else if(prop === "body") {
+			prependToBody(document, node);
+		}
+		return res;
+	};
+}
+
 class SyncedDocuments {
 	constructor(document) {
 		this.realDocument = document;
@@ -69,15 +84,22 @@ class SyncedDocuments {
 		prependToBody(this.cloneDoc, node);
 	}
 
-	prependToHead(node, otherNode) {
+	prependToHead(node, otherNode, lock) {
 		prependToHead(this.realDocument, node);
 		prependToHead(this.cloneDoc, otherNode);
+
+		if(lock) {
+			applyLock(this.realDocument, "head", node);
+		}
 	}
 
-	prependToBody(node, otherNode) {
+	prependToBody(node, otherNode, lock) {
 		prependToBody(this.realDocument, node);
 		if(otherNode) {
 			prependToBody(this.cloneDoc, otherNode);
+		}
+		if(lock) {
+			applyLock(this.realDocument, "body", node);
 		}
 	}
 
@@ -108,6 +130,18 @@ exports.injectFrame = function(document, options = {}) {
 	// Remove any inline scripts
 	removeInlineScripts(syncer.clone);
 
+	let reattachScript = document.createElement("script");
+	reattachScript.setAttribute("type", "module");
+	reattachScript.appendChild(document.createTextNode(options.reattachScript));
+
+	let closeScript = document.createElement("script");
+	closeScript.textContent = `window.closeSsrIframe=function(){var d=document;var f=d.getElementById("donessr-iframe");f.parentNode.removeChild(f);d.body.style.visibility = ''}`;
+	syncer.prependToHead(
+		closeScript,
+		reattachScript,
+		true
+	);
+
 	if(options.preload) {
 		let link = document.createElement("link");
 		link.setAttribute("rel", "preload");
@@ -117,19 +151,19 @@ exports.injectFrame = function(document, options = {}) {
 
 		syncer.prependToHead(
 			document.createComment("autorender-keep preload placeholder"),
-			link
+			link,
+			true
 		);
 	}
-
-	let script = document.createElement("script");
-	script.setAttribute("type", "module");
-	script.appendChild(document.createTextNode(options.reattachScript));
-	syncer.prependToCloneHead(script);
 
 	syncer.clone.setAttribute("data-streamurl", options.streamUrl);
 
 	// Iframe
 	syncer.prependToCloneBody(document.createComment("iframe placeholder"));
 	let iframe = syncer.toIframe();
-	syncer.prependToBody(iframe);
+	syncer.prependToBody(iframe, null, true);
+
+	// Final stuff
+	document.body.setAttribute("style", "visibility: hidden;");
+	document.documentElement.setAttribute("data-incrementally-rendered", "");
 };
