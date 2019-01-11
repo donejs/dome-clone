@@ -113,3 +113,16 @@ QUnit.test("Prefer TextNode::data over nodeValue", function() {
 	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body>value</body></html>";
 	QUnit.equal(html, expected);
 });
+
+QUnit.test("Comments that don't support .nodeValue", function() {
+	var doc = createDocument();
+	var comment = doc.createComment("some comment");
+	Object.defineProperty(comment, "nodeValue", {
+		value: undefined
+	});
+	doc.body.appendChild(comment);
+
+	var html = cloneUtils.serializeToString(doc);
+	var expected = "<!DOCTYPE html><html><head><title>test</title></head><body><!--some comment--></body></html>";
+	QUnit.equal(html, expected);
+});

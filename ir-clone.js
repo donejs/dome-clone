@@ -64,7 +64,7 @@ function* serialize(rootNode) {
 					break;
 				// Comments
 				case 8:
-					yield `<!--${node.nodeValue}-->`;
+					yield `<!--${node.data || node.nodeValue}-->`;
 					break;
 				// Doctype node
 				case 10:
