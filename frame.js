@@ -67,7 +67,7 @@ class SyncedDocuments {
 		this.realDocument = document;
 		this.hasDocType = document.firstChild.nodeType === 10;
 
-		// Do this should probably use document.implementation
+		// This should probably use document.implementation
 		// But this would be a breaking change.
 		this.clone = document.documentElement.cloneNode(true);
 		this.cloneDoc = {
@@ -100,6 +100,24 @@ class SyncedDocuments {
 		}
 		if(lock) {
 			applyLock(this.realDocument, "body", node);
+		}
+	}
+
+	appendToBody(node, otherNode) {
+		this.realDocument.body.appendChild(node);
+		this.cloneDoc.body.appendChild(otherNode);
+	}
+
+	replaceInHead(callback) {
+		let head = this.realDocument.head;
+		let el = head.firstChild;
+		while(el) {
+			let newEl = callback(el);
+			if(newEl) {
+				head.insertBefore(newEl, el);
+				head.removeChild(el);
+			}
+			el = el.nextSibling;
 		}
 	}
 
@@ -157,6 +175,21 @@ exports.injectFrame = function(document, options = {}) {
 	}
 
 	syncer.clone.setAttribute("data-streamurl", options.streamUrl);
+
+	// Move links to the bottom of the body
+	let appends = [];
+	syncer.replaceInHead(el => {
+		if(el.nodeName === "LINK" && el.getAttribute("rel") === "stylesheet") {
+			appends.push(el);
+			return document.createComment("autorender-keep stylesheet");
+		}
+	});
+
+	for(let el of appends) {
+		syncer.appendToBody(
+			el, document.createComment("stylesheet")
+		);
+	}
 
 	// Iframe
 	syncer.prependToCloneBody(document.createComment("iframe placeholder"));

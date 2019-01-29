@@ -62,4 +62,21 @@ QUnit.test("data-incrementally-rendered attr added", function(assert) {
 	assert.equal(doc.documentElement.dataset.incrementallyRendered, "");
 });
 
-//doc.documentElement.setAttribute("data-incrementally-rendered", "");
+QUnit.test("Blocking link tags are moved to the bottom of the body", function(assert) {
+	let doc = createDocument();
+	
+	let link = doc.createElement("link");
+	link.rel = "stylesheet";
+	link.href = "http://example.com/foo.css";
+	doc.head.appendChild(link);
+
+	cloneUtils.injectFrame(doc, {
+		reattachScript: "console.log('hello world');",
+		streamUrl: "http://example.com/instr",
+		preload: true
+	});
+
+	let last = doc.head.lastChild;
+	assert.notEqual(last.nodeName, "LINK", "link not in the head");
+	assert.equal(doc.body.lastChild.nodeName, "LINK", "link is now in the body");
+});
