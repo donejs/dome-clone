@@ -153,7 +153,7 @@ exports.injectFrame = function(document, options = {}) {
 	reattachScript.appendChild(document.createTextNode(options.reattachScript));
 
 	let closeScript = document.createElement("script");
-	closeScript.textContent = `window.closeSsrIframe=function(){var d=document;var f=d.getElementById("donessr-iframe");f.parentNode.removeChild(f);d.body.style.visibility = ''};window.irLinksLoaded = function() {var d=document;return Promise.all(Array.from(document.querySelectorAll('link[rel=stylesheet]')).map(l => l.sheet.cssRules.length ? Promise.resolve() : new Promise(r => ['load','error'].forEach(e => l.addEventListener(e, () => r(), { once: true })))))}`;
+	closeScript.textContent = `window.closeSsrIframe=function(){var d=document;var f=d.getElementById("donessr-iframe");f.parentNode.removeChild(f);d.body.style.visibility = ''};window.irLinksLoaded = function() {var d=document;return Promise.all(Array.from(document.querySelectorAll('link[rel=stylesheet]')).map(l => l.sheet ? Promise.resolve() : new Promise(r => ['load','error'].forEach(e => l.addEventListener(e, () => r(), { once: true })))))}`;
 	syncer.prependToHead(
 		closeScript,
 		reattachScript,
